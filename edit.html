@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="renderer" content="webkit">
+    <title>活动管理</title>
+     <link href="./css/bootstrap.min.css" rel="stylesheet" />
+    <link href="./css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="./css/bootstrap-table.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/fileupload-ui.css">
+    <link rel="stylesheet" href="./css/fileupload.css">
+    <script src="./js/jquery-1.11.2.min.js"></script>
+     <script src="./js/fileupload.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-table.min.js"></script>
+    <script src="./js/bootstrap-table-zh-CN.min.js"></script>
+</head>
+<body style="padding-top: 0px">
+<ol class="bread">
+    <li><a href="/homepage" target="right" class="icon-home"> 首页</a></li>
+    <li>活动管理</li>
+</ol>
+
+<hr style="margin-bottom: 20px;margin-top: 10px">
+
+<form class="form-horizontal" method="post" id="mainPageContent" enctype="multipart/form-data">
+
+    <input type="hidden" id="activityid" value="{{ activity.id}}">
+    <div class="form-group has-warning">
+        <label for="edit_startup_image_url" class="col-sm-2 control-label">活动名称</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" id="name" min="1"
+                   placeholder="活动名称" value="{{ activity.name }}"/>
+        </div>
+    </div>
+
+    <div class="form-group has-success">
+        <label for="edit_level_experience" class="col-sm-2 control-label">上传活动图片</label>
+        <div id="show_image_div" class="col-sm-5">
+            <span class="btn btn-success fileinput-button form-control" style="{% if activity.img_url %}display: none ;{% endif %}">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>添加活动图片</span>
+                    <input id="show_img_input" class="image_input" type="file" name="files[]"
+                           accept="image/png, image/gif, image/jpg, image/jpeg">
+            </span>
+            <div class="alert alert-success img_div"
+                 style="{% if not activity.img_url %}display: none ;{% endif %}font-size: 20px;margin-top: 10px">
+                <button type="button" class="close">&times;</button>
+                <img src="{{ activity.img_url }}" class="img-responsive img-polaroid"/>
+            </div>
+            <div class="progress progress-success progress-striped active" style="display: none">
+                <div class="bar"></div>
+            </div>
+            <input type='hidden' id='show_image' class='result-input' name="image" value="{{ activity.img_url }}"/>
+        </div>
+    </div>
+
+
+    <div class="form-group has-success">
+        <label for="edit_level_experience" class="col-sm-2 control-label">上传活动icon</label>
+        <div id="show_image_div2" class="col-sm-5">
+            <span class="btn btn-success fileinput-button form-control" style="{% if activity.icon_url %}display: none ;{% endif %}">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>添加活动icon</span>
+                    <input id="show_img_input" class="image_input" type="file" name="files[]"
+                           accept="image/png, image/gif, image/jpg, image/jpeg">
+            </span>
+            <div class="alert alert-success img_div"
+                 style="{% if not activity.icon_url %}display: none ;{% endif %}font-size: 20px;margin-top: 10px">
+                <button type="button" class="close">&times;</button>
+                <img src="{{ activity.icon_url }}" class="img-responsive img-polaroid"/>
+            </div>
+            <div class="progress progress-success progress-striped active" style="display: none">
+                <div class="bar"></div>
+            </div>
+            <input type='hidden' id='show_image2' class='result-input' name="image" value="{{ activity.icon_url }}"/>
+        </div>
+    </div>
+
+
+    <div class="form-group has-warning">
+        <label for="edit_startup_image_url" class="col-sm-2 control-label">活动链接地址</label>
+        <div class="col-sm-5">
+           {% comment %} <input type="text" class="form-control" id="activity_url" min="1"
+                   placeholder="活动链接地址" value="{{ activity.activity_url }}">{% endcomment %}
+            <select id="activity_url" class="form-control">
+
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group has-warning">
+        <label for="edit_startup_image_status" class="col-sm-2 control-label">状态</label>
+        <div class="col-sm-5">
+            <select id="status_type" class="form-control">
+                <option value="1" {% if activity.join_in_tool_activity  == 1 %}selected="selected"{% endif %}>可用</option>
+                <option value="0" {% if activity.join_in_tool_activity  == 0 %}selected="selected"{% endif %}>不可用</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group has-warning">
+        <label for="edit_startup_image_status" class="col-sm-2 control-label">限时道具跳转</label>
+        <div class="col-sm-5">
+            <select id="join_in_tool_activity" class="form-control">
+                <option value="1" {% if activity.status_type == 1 %}selected="selected"{% endif %}>显示</option>
+                <option value="2" {% if activity.status_type == 2 %}selected="selected"{% endif %}>不显示</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <a class="btn btn-info" onclick="addactivity()">确定</a>
+            <a href="{% url 'activity_index' %}" class="btn btn-default">取消</a>
+        </div>
+    </div>
+</form>
+
+</body>
+
+<script type="text/javascript">
+    $(function () {
+        $.get("/customer/adv/jsonlist",function (data) {
+            if(data){
+                var content = "";
+                for(var i =0;i<data.length;i++){
+                    var acturl = "{{ activity.activity_url }}";
+                    if(acturl == data[i].adv_info) {
+                        content +='<option selected="selected" value="'+data[i].adv_info+'" >'+data[i].name+'</option>';
+                    }else{
+                        content +='<option value="'+data[i].adv_info+'" >'+data[i].name+'</option>';
+                    }
+                }
+                $("#activity_url").html(content);
+            }
+        });
+    })
+    function addactivity(){
+        var id = $("#activityid").val();
+        var name = $("#name").val();
+        var img_url = $("#show_image").val();
+        var icon_url = $("#show_image2").val();
+        var activity_url = $("#activity_url").val();
+        var status_type = $("#status_type").val();
+        var join_in_tool_activity = $("#join_in_tool_activity").val()
+        if(name == "" || img_url == "" || activity_url == "" || status_type == ""){
+            alert("各项数据不能为空");
+            return;
+        }
+        var param ={
+            id:id,
+            name:name,
+            img_url:img_url,
+            icon_url:icon_url,
+            activity_url:activity_url,
+            status_type:status_type,
+            join_in_tool_activity:join_in_tool_activity
+        }
+        $.post("/customer/activity/add",param,function(data){
+            if(data.ret){
+                alert("操作成功");
+                window.location.href="/customer/activity/index";
+            }else {
+                if(data.errormsg){
+                    alert(data.errormsg);
+                }
+            }
+        });
+    }
+    uploadImage2v($('#show_image_div'), null, null);
+    uploadImage2v($('#show_image_div2'), null, null);
+    //upload single image
+    function uploadImage2v(input_file, width, height){
+        var url = '/customer/upload/image';
+        var fileSelector = input_file.find('.image_input');
+        var imageDivSelector = input_file.find('.img_div');
+        var progressBarSelector = input_file.find('.progress');
+        var inputButtonSelector = input_file.find('.fileinput-button');
+        var imageContainerSelector = input_file.find('.img-polaroid');
+        var imageInputSelector = input_file.find('.result-input');
+        var closeBtnSelector = input_file.find('.alert button');
+        $(closeBtnSelector).click(function () {
+            $(imageContainerSelector).attr("src", "");
+            $(imageInputSelector).attr("value", "");
+            $(imageDivSelector).hide();
+            $(inputButtonSelector).show();
+        });
+        $(fileSelector).fileupload({
+            autoUpload: true,//是否自动上传
+            url: url,//上传地址
+            dataType: 'json',
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            maxFileSize: 1048576,
+            add: function (e, data) {
+                var uploadErrors = [];
+                var acceptFileTypes = /^image\/(gif|jpe?g|png)$/i;
+                var _URL = window.URL || window.webkitURL;
+                var img = new Image();
+                img.src = _URL.createObjectURL(data.originalFiles[0]);
+                if ('type' in data.originalFiles[0] && !acceptFileTypes.test(data.originalFiles[0]['type'])) {
+                    uploadErrors.push('上传图片格式错误!');
+                }
+                if ('size' in data.originalFiles[0] && data.originalFiles[0]['size'] > 1048576) {
+                    uploadErrors.push('上传图片需要小于1M!');
+                }
+                img.onload = function () {
+                    if (width != null && height != null && (img.width != width || img.height != height)) {
+                        uploadErrors.push('上传图片尺寸错误。');
+                    }
+                    if (uploadErrors.length > 0) {
+                        alert(uploadErrors.join("\n"));
+                    } else {
+                        data.submit();
+                    }
+                }
+            },
+            done: function (e, data) {//设置文件上传完毕事件的回调函数
+                //console.log(inputButtonSelector);
+                if ("e" in data.result && data.result["e"]["code"] < 0) {
+                    //console.log(inputButtonSelector);
+                    //console.log(progressBarSelector);
+                    $(inputButtonSelector).show();
+                    $(progressBarSelector).hide();
+                    alert("upload error:" + data.result["e"]["code"] + ':' + data.result["e"]["desc"]);
+                    return;
+                }
+                $.each(data.result.files, function (index, file) {//
+                    $(imageContainerSelector).attr("src", file.url);
+                    var img_input = $(imageInputSelector);
+                    img_input.attr('value', file.url);
+                });
+                $(progressBarSelector).hide();
+                $(imageDivSelector).show();
+            },
+            progressall: function (e, data) {//设置上传进度事件的回调函数
+                $(inputButtonSelector).hide();
+                $(progressBarSelector).show();
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $(progressBarSelector.find('.bar')).css(
+                    'width',
+                    progress + '%'
+                );
+            },
+            fail: function (e, data) {
+                $(inputButtonSelector).show();
+                $(progressBarSelector).hide();
+                console.log(inputButtonSelector);
+                console.log(progressBarSelector);
+                console.log(e);
+                console.log(data);
+                alert("上传失败!");
+            }
+        }).prop('disabled', !$.support.fileInput)
+            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    }
+</script>

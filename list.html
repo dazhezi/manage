@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="renderer" content="webkit">
+    <title>活动管理</title>
+    <link href="./css/bootstrap.min.css" rel="stylesheet" />
+    <link href="./css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="./css/bootstrap-table.min.css" rel="stylesheet" />
+  
+    <script src="./js/jquery-1.11.2.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-table.min.js"></script>
+    <script src="./js/bootstrap-table-zh-CN.min.js"></script>
+</head>
+
+<body>
+
+<hr style="margin-bottom: 20px;margin-top: 10px">
+<div style="margin-bottom: 20px;">
+    &nbsp;&nbsp;<button type="button" data-toggle="modal" data-target="#myModal6" onclick=""class="btn btn-default">添加活动</button>&nbsp;&nbsp;
+    &nbsp;&nbsp;<button type="button" class="btn btn-default" onclick="details()">修改活动</button>&nbsp;&nbsp;
+
+</div>
+<table id="example">
+</table>
+<div class="modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabe6">封号</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reportid" value=""/>
+                <div class="form-group">
+                    <label>封号类型：</label>
+                    <input type="radio" name="block_type" value="1" checked>封设备
+                    <input type="radio" name="block_type" value="2">封id
+                </div>
+
+                <div class="form-group">
+                    <label>封号分类:</label>
+                    <select class="input" style="width:180px; line-height:17px;" id="reason_type" name="reason_type">
+                        <option value="1">微信拉人</option>
+                        <option value="2" >竞品拉人</option>
+                        <option value="3">故意挂断</option>
+                        <option value="4">鉴黄</option>
+                        <option value="5">其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>被封ID:</label>
+                    <input type="text" class="input w100" id="edit_block_user" name="edit_block_user" placeholder="被封ID" data-validate="required:请输入ID">
+                </div>
+
+                <div class="form-group">
+                    <label>封号时长:</label>
+                    <div style="padding-top: 8px;">
+                        <label class="checkbox-inline">
+                            <input type="radio" name="edit_block" value="4" checked>封一天
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="radio" name="edit_block" value="1">封一周
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="radio" name="edit_block" value="2">永久封号
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>原因:</label>
+                    <div class="field">
+                        <textarea type="text" class="input w200" id="edit_block_reason" name="edit_block_reason" style="height:80px;" placeholder="封号原因" data-validate="required:请输入封号原因"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="doblockuser()">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+
+</body>
+
+    <script type="text/javascript">
+        $(function () {
+            //1.初始化Table
+            var oTable = new TableInit();
+            oTable.Init();
+            //2.初始化Button的点击事件
+            var oButtonInit = new ButtonInit();
+            oButtonInit.Init();
+        });
+        function details() {
+            var a= $('#example').bootstrapTable('getSelections');
+            if(a.length > 1){
+                alert("只能选择一行操作");
+            }else if (a.length == 1){
+               var id =  a[0].id;
+               window.location.href="/customer/activity/detail?id="+id;
+            }else{
+                alert("请选择一行操作");
+            }
+        }
+        var TableInit = function () {
+            var oTableInit = new Object();
+            //初始化Table
+            oTableInit.Init = function () {
+                $('#example').bootstrapTable({
+                    url: '/customer/activity/jsonlist',         //请求后台的URL（*）
+                    method: 'get',                      //请求方式（*）
+                    striped: true,                      //是否显示行间隔色
+                    cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    pagination: true,                   //是否显示分页（*）
+                    queryParams: oTableInit.queryParams,//传递参数（*）
+                    sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                    pageNumber:1,                       //初始化加载第一页，默认第一页
+                    pageSize: 10,                       //每页的记录行数（*）
+                    pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                    minimumCountColumns: 2,             //最少允许的列数
+                    clickToSelect: true,                //是否启用点击选中行
+                    //height: 300,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    columns: [
+                        {
+                            checkbox: true
+                        },
+                        {
+                            field: 'name',
+                            title: '活动名称'
+                        },
+                        {
+                            field: 'status_type',
+                            title: '状态',
+                            formatter:function (value,row,index) {
+                                if(row.status_type == '0'){
+                                   return  "关闭"
+                                }else {
+                                    return  "开启"
+                                }
+                            }
+                        }, {
+                            field: 'img_url',
+                            title: '活动图',
+                            formatter: imgformatter
+                        },
+                        {
+                            field: 'icon_url',
+                            title: 'icon图',
+                            formatter: imgformatter
+                        }, {
+                            field: 'create_time',
+                            title: '创建时间'
+                        }]
+                });
+            };
+            //得到查询的参数
+            oTableInit.queryParams = function (params) {
+                var temp = {
+                    limit: params.limit,
+                    offset: params.offset,
+                };
+                return temp;
+            };
+            return oTableInit;
+        };
+        var ButtonInit = function () {
+            var oInit = new Object();
+            var postdata = {};
+            oInit.Init = function () {
+                //初始化页面上面的按钮事件
+            };
+            return oInit;
+        };
+        function imgformatter(value,row,index){
+            var optcontent = "";
+            optcontent = '<img width="80" height="50" src="'+ value+'">';
+            return optcontent;
+        }
+    </script>
+  
